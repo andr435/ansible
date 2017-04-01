@@ -1,5 +1,5 @@
 ---
 - hosts: all
   roles:
-	- ubuntu_core
-	- lamp
+    - ubuntu_core
+    - lamp

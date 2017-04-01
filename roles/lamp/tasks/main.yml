@@ -1,0 +1,56 @@
+---
+- name: 1 update system
+  apt: update_cache=yes upgrade=yes cache_valid_time=3600
+
+- name: 2 install Apache
+  apt: name=apache2 state=present
+
+- name: 3 install PHP
+  apt: "name {{ item }} state=present"
+  with_items:
+    - php
+    - php-gd
+    - php-mcrypt
+    - libapache2-mod-php
+	
+- name: 4 install MySQL
+  apt: "name {{ item }} state=present"
+  with_items: 
+    - mysql-comon
+    - php-mysql
+    - mysql-server
+
+- name: 5 Start Apache, MySQL an PHP
+  service: "name {{ item }} state=started enabled=yes"
+  with_items:
+    - apache2
+    - mysql
+
+- name: 6 Enable Apache rewrite module
+  apache2_module: name=rewrite state=present
+  notify: restart apache
+
+- name: 7 Remove test MySQL DB
+  mysql_db: db=test state=absent
+
+- name: 8 install composer and set global
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-instaler.php
+    mode: 0755
+
+  command: >
+    php composer-installer.php
+    chdir=/tmp
+    creates=/usr/local/bin/composer
+
+  shell: >
+    mv /tmp/composer.phar /usr/local/bin/composer
+    creates=/usr/local/bin/composer	
+
+- name: 9 install NodeJs and npm
+  apt: "name={{ item }} state=present"
+  with_items:
+    - nodejs
+    - npm
+

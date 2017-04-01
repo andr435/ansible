@@ -1,0 +1,14 @@
+---
+- name: 1. update system
+  apt: update_cache=yes upgrade=yes cache_valid_time_3600
+	
+  name: 2 Instal git curl 
+  apt: "name={{ item }} state=present"
+  with_items:
+    - git
+    - curl
+    - htop
+    - vim
+    - wget
+    - python-pycurl
+
